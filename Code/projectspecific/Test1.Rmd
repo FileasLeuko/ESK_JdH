@@ -1,0 +1,62 @@
+---
+title: "Multivariate Regressionsanalyse des Energieverbrauchs eines Mehrfamilienhauses in Bremen"
+author: "Filip Milojkovic"
+date: "17. Dezember 2015"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+rm(list=ls())
+source("C:/Users/filip/Dropbox/arbeit/co2online/Analysis/R/commonRfiles/R_pkgs_essence.R")
+#getwd()
+```
+
+```{r, echo=FALSE}
+Hemon <- as.data.table(read.csv2("C:/Users/filip/Dropbox/arbeit/co2online/Analysis/R/MFH Hemon Bremen/Erdgas-Meter-Regression.csv",sep=";"))
+
+```
+
+### Beschreibung des Datensatzes
+In der ersten Spalte steht der Name der Variable, "Factor" bezeichnet eine Variable ohne besondere Formatierung (für die Regression ist erstmal egal um welchen Zeitpunkt es sich handelt), "num" bezeichnet eine numerische Variable, "int" ganze Zahlen. 
+```{r}
+str(Hemon)
+```
+Hier sieht man die paarweisen Korellationen: 
+```{r}
+pairs(~MWh+Temp+Sun+Wind+Deklination, data = Hemon,  lower.panel = panel.smooth, upper.panel=NULL)
+```
+
+### Regressionen
+Das Regressionsmodell: abhängige Variable ist MWh, regressiert auf die unabhängigen Variablen Temp, Sun, Wind und Deklination.
+```{r}
+reg1 <- lm(data = Hemon, formula = MWh ~ Temp + Sun + Wind + Deklination)
+```
+
+### Analysen
+Hier wird zu allererst einmal deutlich, dass wie zu erwarten die Temperatur den stärksten auf den Energieverbrauch der Heizung hat. 
+```{r}
+summary.lm(reg1)
+
+anova(reg1)
+
+```
+
+```{r}
+plot(reg1)
+```
+
+### Vorhersagen aus dem Modell
+
+Am 21.12. is der aus dem Modell vorhergesagte Verbrauch bei 0 Sonnenstunden, Windstille und 0° Außentemperatur genau die Konstante aus dem Modell `r 0.9559712`. Nimmt nun der Wind zu, um drei Windstärken, ist der vorhergesagte Verbrauch: 0.9559712 + 3*0.0309691 = `r 0.9559712 + 3*0.0309691`, also gerundet um 80 kWh höher. 
+ -
+```{r}
+
+```
+
+```{r}
+
+```

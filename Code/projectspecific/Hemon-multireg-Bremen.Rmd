@@ -1,0 +1,63 @@
+---
+title: "Multivariate Regressionsanalyse des Energieverbrauchs eines Mehrfamilienhauses in Bremen"
+author: "Filip Milojkovic"
+date: "17. Dezember 2015"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+rm(list=ls())
+source("C:/Users/filip/Dropbox/arbeit/co2online/Analysis/R/commonRfiles/R_pkgs_essence.R")
+#getwd()
+```
+
+```{r, echo=FALSE}
+Hemon <- as.data.table(read.csv2("C:/Users/filip/Dropbox/arbeit/co2online/Analysis/R/MFH Hemon Bremen/Erdgas-Meter-Regression.csv",sep=";"))
+
+```
+
+### Beschreibung des Datensatzes
+In der ersten Spalte steht der Name der Variable, "Factor" bezeichnet eine Variable ohne besondere Formatierung (für die Regression ist erstmal egal um welchen Zeitpunkt es sich handelt), "num" bezeichnet eine numerische Variable, "int" ganze Zahlen. 
+```{r}
+str(Hemon)
+```
+Hier sieht man die paarweisen Korellationen: 
+```{r}
+pairs(~MWh+Temp+Sun+Wind+Deklination, data = Hemon,  lower.panel = panel.smooth, upper.panel=NULL)
+```
+
+### Regressionen
+Das Regressionsmodell: abhängige Variable ist MWh, regressiert auf die unabhängigen Variablen Temp, Sun, Wind und Deklination.
+```{r}
+reg1 <- lm(data = Hemon, formula = MWh ~ Temp + Sun + Wind + Deklination)
+```
+
+### Analysen
+Hier wird zu allererst einmal deutlich, dass wie zu erwarten die Temperatur den stärksten auf den Energieverbrauch der Heizung hat. 
+```{r}
+summary.lm(reg1)
+
+anova(reg1)
+#manova(reg1)
+```
+'
+### Addendum weiterer möglicher Modelle
+Das folgende Modell nimmt zusätzlich einen multiplikativen Interaktionsterm mit auf. Die Idee dahinter ist, dass die Deklination der Sonne nur dann eine Rolle spielt, wenn sie auch scheint. Dieser Term hat jedoch keinen weiteren Erklärungsgehalt, wie der P-Value von 0,153036 eindeutig belegt. 
+```{r}
+reg2 <- lm(data = Hemon, formula = MWh ~ Temp + Sun + Wind + Deklination + Sun:Deklination)
+summary.lm(reg2)
+anova(reg2)
+
+reg3 <- update(reg1, .~.+ Temp*Deklination)
+summary.lm(reg3)
+
+pairs(~MWh+Temp+Sun+Wind+Deklination, data = Hemon,  lower.panel = panel.smooth)
+```
+
+```{r}
+
+```'

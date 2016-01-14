@@ -1,0 +1,32 @@
+---
+title: "Analyse der ESK Paneldaten"
+author: "Filip Milojkovic - www.co2online.de"
+date: "14. Dezember 2015"
+output: html_document
+---
+
+This documents analyses data from the intelligent Energy Savings Account (so-called "Energiesparkonto").   
+
+```{r load data and packages, echo=FALSE, warning=FALSE}
+setwd("C:/Users/filip/Dropbox/arbeit/co2online/Analysis/R")
+source("commonRfiles/R_pkgs_essence.R")
+load(file = "data/20151214_ESK_panel.RData")
+```
+
+Names of Variables
+
+```{r names of variables, echo=FALSE}
+names(ESK_panel)
+```
+
+Structure of the data
+
+```{r, echo=FALSE}
+str(ESK_panel)
+```
+
+```{r, echo=FALSE}
+attach(ESK_panel)
+table(buildingType)
+```
+
